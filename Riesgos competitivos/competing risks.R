@@ -33,7 +33,7 @@ ggplotly(
     geom_linerange(aes(ymin = 0, ymax = time)) +
     geom_point(aes(shape = status, color = status), stroke = 1, cex = 2) +
     scale_shape_manual(values = c(1, 3, 4)) +
-    labs(y = "Tiempo (d韆s)", x = "id") + coord_flip() + theme_classic(),
+    labs(y = "Tiempo (d铆as)", x = "id") + coord_flip() + theme_classic(),
   tooltip = "text"
 )
 
@@ -45,7 +45,7 @@ ggplotly(
 
 ###################################################
 ### 1.1
-### Comparaci髇 no param閠rica de CIF
+### Comparaci贸n no param茅trica de CIF
 
 
 library(cmprsk)
@@ -60,12 +60,12 @@ cif
 
 #########################################
 #### 1.2 Cause-specific hazard regression
-#### Regresi髇 de riesgo de causa espec韋ica
+#### Regresi贸n de riesgo de causa espec铆fica
 
 
 
 
-### Regresi髇 de Cox 
+### Regresi贸n de Cox 
 
 csh<-coxph(Surv(time,status==1)~sex+invasion,data=Melanoma)
 summary(csh)
@@ -104,7 +104,7 @@ crr.model<-crr(Melanoma$time,Melanoma$status,cov1=cov)
 crr.model
 
 ### 1.4 Model prediction
-### Predicci髇 del modelo
+### Predicci贸n del modelo
 
 
 newdata<-data.frame(sex=factor(c("Hombre","Hombre","Mujer"),
@@ -119,12 +119,12 @@ dummy.new
 
 
 pred<-predict(crr.model,dummy.new)
-plot(pred,lty=1:3,col=1:3,xlab="D韆s",ylab="Cumulative incidence function")
-legend("topleft",c("Hombre,age=52,invasion2","Hombre,age=33,
+plot(pred,lty=1:3,col=1:3,xlab="D铆as",ylab="Cumulative incidence function")
+legend("topleft",c("Hombre,age=52,invasion2","Hombre,age=32,
                    invasion1","Female,age=59,invasion2"),lty=1:3,col=1:3)
 
 
-#### An醠isis de supervivencia en presencia de riesgos competitivos
+#### An谩lisis de supervivencia en presencia de riesgos competitivos
 
 reg<-riskRegression(Hist(time, status) ~ sex + age +invasion, data = Melanoma, cause = 1,link="prop")
 reg
@@ -132,7 +132,7 @@ plot(reg,newdata=newdata)
 
 
 ### 1.5 Model diagnostic
-### Modelo de diagn髎tico
+### Modelo de diagn贸stico
 
 
 checkdata<-data.frame(sex=factor(c("Hombre","Hombre","Hombre"),
@@ -153,7 +153,7 @@ summary(crr.time)
 
 
 
-# Regresi髇 de riesgos competitivo
+# Regresi贸n de riesgos competitivo
 
 
 reg.time<-riskRegression(Hist(time, status) ~ sex + age +

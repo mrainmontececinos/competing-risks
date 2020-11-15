@@ -120,7 +120,8 @@ dummy.new
 
 pred<-predict(crr.model,dummy.new)
 plot(pred,lty=1:3,col=1:3,xlab="Días",ylab="Cumulative incidence function")
-legend("topleft",c("Hombre,age=50,invasion2","Hombre,age=31,invasion1","Female,age=29,invasion2"),lty=1:3,col=1:3)
+legend("topleft",c("Hombre,age=52,invasion2","Hombre,age=33,
+                   invasion1","Female,age=59,invasion2"),lty=1:3,col=1:3)
 
 
 #### Análisis de supervivencia en presencia de riesgos competitivos

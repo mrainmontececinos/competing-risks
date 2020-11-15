@@ -3,15 +3,15 @@ title: "Competing risks"
 author: "Manuel Rain"
 date: " 14-11-2020"
 output:
+  pdf_document:
+    toc: yes
+    toc_depth: '5'
   html_document:
     toc: yes
     toc_depth: 5
     toc_float:
       collapsed: no
       smooth_scroll: yes
-  pdf_document:
-    toc: yes
-    toc_depth: '5'
 subtitle: ""
 ---
 
@@ -55,30 +55,6 @@ Melanoma$sex=factor(Melanoma$sex, levels = c("Female","Male"),
 ```
 
 
-Una presentación gráfica de los tiempos de seguimiento observados puede ser de gran ayuda en el análisis de los datos de supervivencia. La ilustración de los datos de supervivencia en la Figura muestra varias características que se encuentran típicamente en el análisis de datos de supervivencia.
-
-
-
-```{r echo=T,message=F, warning=F}
-ggplotly(
-  Melanoma %>%
-    mutate(
-      text = paste("id = ", id,
-                   "<br>", "time= ", time,
-                   "<br>", "event = ",event,
-                   "<br>", " age= ", round(age, 2))
-    ) %>%
-    ggplot(aes(x = id, y = time, text = text)) +
-    geom_linerange(aes(ymin = 0, ymax = time)) +
-    geom_point(aes(shape = event, color = event), stroke = 1, cex = 2) +
-    scale_shape_manual(values = c(1, 3, 4)) +
-    labs(y = "Tiempo (días)", x = "id") + coord_flip() + theme_classic(),
-  tooltip = "text"
-)
-
-```
-
-
 
 # Comparación no paramétrica de CIF
 
@@ -88,8 +64,9 @@ Por lo tanto, los CIF para diferentes causas de falla brindan información adici
 
 ```{r echo=T,message=F, warning=F}
 library(cmprsk )
-cif<-cuminc(ftime = Melanoma$time, fstatus = Melanoma$event, group=Melanoma$sex,cencode = "censurado")
-plot(cif,col=1:4,xlab="Dias")
+cif<-cuminc(ftime = Melanoma$time, fstatus = Melanoma$event,
+            group=Melanoma$sex,cencode = "censurado")
+plot(cif,col=1:5,xlab="Dias")
 
 ```
 La Figura muestra que los pacientes varones tienen un mayor riesgo de muerte por melanoma y otras causas que las mujeres. La diferencia parece mayor para el fracaso por melanoma versus el fracaso por otras causas.
@@ -133,7 +110,8 @@ Por ejemplo, quiero predecir el riesgo de un paciente masculino de 40 años con 
 ```{r echo=T,message=F, warning=F}
 library("pec")
 
-pec::predictEventProb(CSH,cause="murio",newdata=data.frame(age=40,invasion=factor("level.2",levels=levels(Melanoma$invasion)),
+pec::predictEventProb(CSH,cause="murio",
+              newdata=data.frame(age=40,invasion=factor("level.2",levels=levels(Melanoma$invasion)),
               sex=factor("Hombre",levels=levels(Melanoma$sex))),
         time=c(1000,2000,3000))
 
@@ -187,14 +165,17 @@ dummy.new
 
 pred<-predict(crr.model,dummy.new)
 plot(pred,lty=1:3,col=1:3,xlab="Días",ylab="Cumulative incidence function")
-legend("topleft",c("Hombre,age=50,invasion2","Hombre,age=31,invasion1","Female,age=29,invasion2"),lty=1:3,col=1:3)
+legend("topleft",c("Hombre,age=52,invasion2",
+                   "Hombre,age=32,invasion1","Female,age=59,invasion2"),
+       lty=1:3,col=1:3)
 
 ```
 
 La salida gráfica anterior proporciona CIF para pacientes con características especificadas en los nuevos datos . El argumento de enlace controla la función de enlace que se utilizará: "prop" para el modelo de regresión de Fine-Gray, "relativo" para el modelo de regresión de riesgo absoluto y "logístico" para el modelo de regresión de riesgo logístico.
 
 ```{r echo=T,message=F, warning=F}
-reg<-riskRegression(Hist(time, status) ~ sex + age +invasion, data = Melanoma, cause = 1,link="prop")
+reg<-riskRegression(Hist(time, status) ~ sex + age +invasion, 
+                    data = Melanoma, cause = 1,link="prop")
 reg
 plot(reg,newdata=newdata)
 ```
@@ -209,12 +190,14 @@ Un supuesto importante del modelo de regresión de Cox es la proporcionalidad, q
 ```{r echo=T,message=F, warning=F}
 checkdata<-data.frame(sex=factor(c("Hombre","Hombre","Hombre"),
                                  levels=levels(Melanoma$sex)),
-                      age=c(46,46,46),invasion=factor(c("level.0","level.1","level.2"),
-                                                      levels=levels(Melanoma$invasion)))
+                      age=c(46,46,46),
+                      invasion=factor(c("level.0","level.1","level.2"),
+                                levels=levels(Melanoma$invasion)))
 checkdata
 plot(reg,newdata=checkdata,lty=1:3,col=1:3)
 text(2000,1,"Covariates sex='Hombre'; age=46")
-legend("topleft",c("invasion.level0","invasion.level1","invasion.level2"),lty=1:3,col=1:3)
+legend("topleft",c("invasion.level0","invasion.level1","invasion.level2"),
+       lty=1:3,col=1:3)
 
 
 
@@ -240,7 +223,8 @@ El argumento cov2 toma una matriz de covariables que se multiplicará por el tie
 
 ```{r echo=T,message=F, warning=F}
 reg.time<-riskRegression(Hist(time, status) ~ sex + age +
-                             strata(invasion), data = Melanoma, cause = 1,link="prop")
+                             strata(invasion),
+                         data = Melanoma, cause = 1,link="prop")
 
 plotEffects(reg.time,formula=~invasion)
 
